@@ -1,5 +1,7 @@
 import { TenantProvider } from "@/providers/tenant-provider";
 
+export const instant = false;   
+
 export default async function TenantLayout({
   children,
   params,
