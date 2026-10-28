@@ -13,7 +13,6 @@ import { buttonVariants } from "@/components/ui/button";
 import { ThemeToggler } from "@/components/shared/theme-switcher";
 import { cn } from "@/lib/utils";
 import { CopyrightYear } from "@/components/shared/copyright-year";
-import { DomainDebugBanner } from "@/components/shared/domain-debug-banner";
 
 const modules = [
   {
@@ -66,7 +65,6 @@ const bars = [40, 65, 50, 80, 60, 90, 72];
 export default function Home() {
   return (
     <div className="flex min-h-screen flex-col bg-background font-sans text-foreground">
-      <DomainDebugBanner />
       {/* Header */}
       <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur">
         <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-6">
@@ -100,7 +98,7 @@ export default function Home() {
         <section className="relative overflow-hidden">
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[480px] bg-gradient-to-b from-primary/10 via-secondary/40 to-transparent"
+            className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-120 bg-linear-to-b from-primary/10 via-secondary/40 to-transparent"
           />
           <div className="mx-auto w-full max-w-6xl px-4 pb-16 pt-20 text-center sm:px-6 sm:pt-28">
             <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs font-medium text-muted-foreground">

@@ -3,7 +3,6 @@
 import { useRef, type ClipboardEvent, type KeyboardEvent } from "react";
 import { motion } from "framer-motion";
 import { cn } from "cn";
-import { OTP_LENGTH } from "@/lib/auth";
 
 type Status = "idle" | "verifying" | "error" | "success";
 
@@ -15,6 +14,8 @@ type OtpInputProps = {
   disabled?: boolean;
   autoFocus?: boolean;
 };
+
+const OTP_LENGTH = 6;
 
 export function OtpInput({
   value,

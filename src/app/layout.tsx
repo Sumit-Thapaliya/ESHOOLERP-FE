@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import QueryProvider from "@/providers/query-provider";
 import "./globals.css";
 import ThemeProvider from "@/providers/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,12 +24,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      data-theme="sunrise"
+      data-theme="baudhika"
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable}`}
     >
       <body className="min-h-full flex flex-col">
         <ThemeProvider>
+          <Toaster richColors position="top-right" />
           <QueryProvider>{children}</QueryProvider>
         </ThemeProvider>
       </body>

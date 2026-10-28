@@ -1,25 +1,18 @@
 "use client";
 
-import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { GraduationCap } from "lucide-react";
-import { cn } from "cn";
+import { cn } from "@/lib/utils";
+import { TenantLogo } from "@/components/tenant/tenant-logo";
 import { CredentialsStep } from "@/components/auth/credentials-step";
 import { OtpStep } from "@/components/auth/otp-step";
-import { DEMO_MODE, DEMO_OTP } from "@/lib/auth";
 import { useTenant } from "@/providers/tenant-provider";
+import {
+  useAuthFlow,
+  useAuthFlowHydrated,
+  type Step,
+} from "@/store/auth-flow-store";
 
 const EASE: [number, number, number, number] = [0.22, 0.61, 0.36, 1];
-
-type Step = "credentials" | "otp";
-
-function titleize(slug: string) {
-  return slug
-    .split("-")
-    .filter(Boolean)
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
-}
 
 function StepPills({ step }: { step: Step }) {
   const identifyDone = step === "otp";
@@ -28,7 +21,7 @@ function StepPills({ step }: { step: Step }) {
     <div className="mb-5 flex items-center gap-1.5">
       <span
         className={cn(
-          "inline-flex h-[26px] items-center gap-1.5 rounded-full border px-2.5 text-[11px] font-medium transition-all duration-300",
+          "inline-flex h-6.5 select-none items-center gap-1.5 rounded-full border px-2.5 text-[11px] font-medium transition-all duration-300",
           identifyDone
             ? "border-teal/40 bg-teal/10 text-teal"
             : "border-primary bg-primary text-primary-foreground",
@@ -36,7 +29,7 @@ function StepPills({ step }: { step: Step }) {
       >
         <span
           className={cn(
-            "grid size-[15px] place-items-center rounded-full text-[9.5px] font-bold",
+            "grid size-3.75 place-items-center rounded-full text-[9.5px] font-bold",
             identifyDone ? "bg-teal/25" : "bg-white/25",
           )}
         >
@@ -49,7 +42,7 @@ function StepPills({ step }: { step: Step }) {
 
       <span
         className={cn(
-          "inline-flex h-[26px] items-center gap-1.5 rounded-full border px-2.5 text-[11px] font-medium transition-all duration-300",
+          "inline-flex h-6.5 select-none items-center gap-1.5 rounded-full border px-2.5 text-[11px] font-medium transition-all duration-300",
           identifyDone
             ? "border-primary bg-primary text-primary-foreground"
             : "border-border bg-card/60 text-muted-foreground",
@@ -57,7 +50,7 @@ function StepPills({ step }: { step: Step }) {
       >
         <span
           className={cn(
-            "grid size-[15px] place-items-center rounded-full text-[9.5px] font-bold",
+            "grid size-3.75 place-items-center rounded-full text-[9.5px] font-bold",
             identifyDone ? "bg-white/25" : "bg-muted text-muted-foreground",
           )}
         >
@@ -70,9 +63,11 @@ function StepPills({ step }: { step: Step }) {
 }
 
 export default function LoginPage() {
-  const { slug } = useTenant();
-  const [step, setStep] = useState<Step>("credentials");
-  const [email, setEmail] = useState("");
+  const { tenant } = useTenant();
+  const hydrated = useAuthFlowHydrated();
+  const step = useAuthFlow((s) => s.step);
+
+  if (!hydrated) return <div className="min-h-104" aria-hidden />;
 
   return (
     <div className="w-full">
@@ -82,14 +77,14 @@ export default function LoginPage() {
         className="grid gap-3.5"
       >
         <motion.div layout className="flex items-center justify-center gap-2.5">
-          <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary text-primary-foreground shadow-sm">
-            <GraduationCap className="size-5" />
-          </span>
+          <TenantLogo className="size-10" />
           <div className="leading-tight">
             <p className="text-[17px] font-semibold tracking-[-0.012em]">
-              Baudhika <span className="font-medium text-muted-foreground">ERP</span>
+              {tenant.name}
             </p>
-            <p className="text-[11px] text-muted-foreground">{titleize(slug)}</p>
+            <p className="text-[11px] text-muted-foreground">
+              Powered by Baudhika ERP
+            </p>
           </div>
         </motion.div>
 
@@ -100,7 +95,11 @@ export default function LoginPage() {
         >
           <StepPills step={step} />
 
-          <motion.div layout transition={{ duration: 0.42, ease: EASE }} className="relative">
+          <motion.div
+            layout
+            transition={{ duration: 0.42, ease: EASE }}
+            className="relative"
+          >
             <AnimatePresence mode="wait" initial={false}>
               {step === "credentials" ? (
                 <motion.div
@@ -110,12 +109,7 @@ export default function LoginPage() {
                   exit={{ opacity: 0, x: -16 }}
                   transition={{ duration: 0.26, ease: EASE }}
                 >
-                  <CredentialsStep
-                    onSent={(value) => {
-                      setEmail(value);
-                      setStep("otp");
-                    }}
-                  />
+                  <CredentialsStep />
                 </motion.div>
               ) : (
                 <motion.div
@@ -125,7 +119,7 @@ export default function LoginPage() {
                   exit={{ opacity: 0, x: -16 }}
                   transition={{ duration: 0.26, ease: EASE }}
                 >
-                  <OtpStep email={email} onBack={() => setStep("credentials")} />
+                   <OtpStep />
                 </motion.div>
               )}
             </AnimatePresence>
@@ -136,15 +130,7 @@ export default function LoginPage() {
           layout
           className="text-center text-[11.5px] text-muted-foreground"
         >
-          {DEMO_MODE ? (
-            <>
-              Demo OTP{" "}
-              <b className="font-mono tracking-[0.06em] text-foreground">{DEMO_OTP}</b> · any
-              email &amp; password works
-            </>
-          ) : (
-            "Protected by two-factor authentication"
-          )}
+          Protected by two-factor authentication
         </motion.p>
       </motion.div>
     </div>
